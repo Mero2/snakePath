@@ -1,0 +1,192 @@
+<html lang = "en">
+<head>
+    <meta charset = "UTF-8">
+	<title>snake path</title>
+</head>
+<body>
+	<style type="text/css">
+	*{
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		text-align: none;
+	}
+	#map{
+        position: absolute;
+		width: 800px;
+		height: 600px;
+		background-color: #567;
+    border:20px solid blue;
+
+    }
+    /*生成地图*/
+    .food{
+    	width: 20px;
+    	height: 20px;
+    	left: 200px;
+    	top:300px;
+    	position: absolute;
+    	background-color: black;
+    	display: block;
+    	border-radius: 50%;
+    }
+    .head{
+    	width: 20px;
+    	height: 20px;
+    	position: absolute;
+    	background-color:#eff;
+        left: 100px;
+    	top: 100px;
+    	border-radius: 50%; 
+    }
+    .body{
+    	position: absolute;
+    	width: 20px;
+    	height: 20px;
+      left: 80px;
+      top: 100px;
+        background-color: #e00;
+        border-radius: 50%;
+    }
+   
+	</style>
+	<!-- 地图 -->
+	<div id = "map">
+    <div class = "food"></div>
+    <div class = "head"></div>
+		<div class = "body"></div>
+		<div class = "body"></div>
+		
+</div>
+<button id = "btn">Start Game</button>
+	
+
+	<script type="text/javascript">
+	var map = document.getElementById('map');
+	var food = document.getElementsByClassName('food')[0];
+	var head = document.getElementsByClassName("head")[0];
+  var btn = document.getElementById("btn");
+	var body = document.getElementsByClassName("body");
+	var timer = null;
+	var direction = null;
+    function setFood(){
+        var foo= document.createElement('div');
+        var foodx = Math.floor(Math.random()*800/20);
+	      var foody = Math.floor(Math.random()*600/20);
+          food.style.left = foodx *20 +'px';
+          food.style.top = foody*20 + 'px';
+          map.appendChild(food);
+          food.className = 'food';
+          
+
+
+  }
+	var array = [
+		[100,100],
+		[80,100],
+		[60,100]
+		];
+
+		for (var i = 0; i < body.length; i++) {
+			body[i].style.left = array[i+1][0]+ 'px';
+			body[i].style.top = array[i+1][1] + 'px';
+      // 把数组的每个数赋到蛇身的每个节点的坐标
+	function move(){
+		var length = array.length - 1;
+		for (var i = length; i >0; i--){
+			array[i][0] = array[i-1][0];
+			array[i][1] = array[i-1][1];
+
+		}
+	
+	switch(direction){
+       	case'right':
+          array[0][0] = array[0][0] + 20;
+          head.style.left = array[0][0] +'px';
+          // 按右方向键，纵坐标不变，横坐标加20
+          break;
+        case'left':
+          array[0][0] = array[0][0] - 20;
+          head.style.left = array[0][0] +'px';
+          break;
+        case'up':
+          array[0][1] = array[0][1] - 20;
+          head.style.top = array[0][1] +'px';
+          break;
+        case'down':
+          array[0][1] = array[0][1] + 20;
+          head.style.top = array[0][1] +'px';
+          break;
+       }
+       condition();
+       // 移动之后的状态判断，撞墙，自杀
+
+
+   }
+   function eat(){
+    var node = document.createElement('div');
+		map.appendChild(node);
+		node.className = 'body';
+		var length = array.length-1;
+    var h = array[length][0]-array[length-1][0];
+    var z = array[length][1]-array[length-1][1];
+    // 蛇后的两个节点的坐标差值
+    var x = array[length][0]+h;
+    var y = array[length][1]+z;
+		array.push([x,y]);
+  }
+  function condition(){
+    
+        if(array[0][0] == food.offsetLeft&&array[0][1] == food.offsetTop){
+          eat();
+          map.removeChild(food);
+          setFood();
+        }
+        if(array[0][0] < 0|| array[0][0] == 800||array[0][1] < 0 || array[0][1] == 600){
+          alert('撞墙了吧，傻狗');
+          clearInterval(timer);
+          return;
+        }
+        for (var i = 1; i < array.length; i++){
+          if(array[0][0] == array[i][0]&&array[0][1] == array[i][1]){
+              alert('手残，再见');
+              clearInterval(timer);
+              return;
+            }
+          }
+        }
+      }
+
+
+	if(direction===null){
+      direction ='right';
+      timer = setInterval(function(){
+            move();
+            for (var i = 0; i < body.length; i++) {
+			body[i].style.left = array[i+1][0] +'px';
+			body[i].style.top = array[i+1][1] + 'px';
+    }
+  },200);
+    }
+    document.onkeydown = function(event){
+    //控制方向，W S D A分别代表 上下右左
+    switch(window.event?window.event.keyCode:event.keyCode){//浏览器兼容处理
+      case 87 :
+        direction = array[0][0] == array[1][0]?direction:'up';//避免反向移动
+        break;
+      case 83: 
+        direction = array[0][0] == array[1][0]?direction:'down';
+        break;
+      case 68: 
+        direction = array[0][1] == array[1][1]?direction:'right';
+        break;
+      case 65:
+        direction = array[0][1] == array[1][1]?direction:'left';
+        break;
+    }
+}
+</script>
+
+
+</body>
+</html>
